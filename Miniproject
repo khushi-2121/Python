@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Read the CSV file
+df = pd.read_csv("students.csv")
+
+# Display the original data
+print("Original Data:\n", df)
+
+# Clean data: Fill missing values with average marks of that subject
+df['Maths'].fillna(df['Maths'].mean(), inplace=True)
+df['Science'].fillna(df['Science'].mean(), inplace=True)
+
+# Calculate average score for each student
+df['Average'] = df[['Maths', 'Science', 'English']].mean(axis=1)
+
+# Filter students who scored more than 80 on average
+high_achievers = df[df['Average'] > 80]
+
+print("\nHigh Achievers (Average > 80):\n", high_achievers)
+
+# Group by performance level
+df['Performance'] = pd.cut(df['Average'],
+                           bins=[0, 60, 75, 90, 100],
+                           labels=['Poor', 'Average', 'Good', 'Excellent'])
+
+# Plot average scores
+plt.figure(figsize=(10, 5))
+plt.bar(df['Name'], df['Average'], color='skyblue')
+plt.title("Average Marks of Students")
+plt.xlabel("Student Name")
+plt.ylabel("Average Marks")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig("average_scores.png")
+plt.show()
+
+# Save cleaned data
+df.to_csv("cleaned_students.csv", index=False)
